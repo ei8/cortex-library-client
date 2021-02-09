@@ -14,7 +14,6 @@ namespace ei8.Cortex.Library.Client.Out
     public class HttpEventStoreCoreClient : IEventStoreCoreClient
     {
         private readonly IRequestProvider requestProvider;
-        private readonly ITokenService tokenService;
 
         private static Policy exponentialRetryPolicy = Policy
             .Handle<Exception>()
@@ -27,22 +26,22 @@ namespace ei8.Cortex.Library.Client.Out
         private static readonly string GetEventStorePathTemplate = "cortex/eventstore";
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public HttpEventStoreCoreClient(IRequestProvider requestProvider = null, ITokenService tokenService = null)
+        public HttpEventStoreCoreClient(IRequestProvider requestProvider = null)
         {
             this.requestProvider = requestProvider ?? Locator.Current.GetService<IRequestProvider>();
-            this.tokenService = tokenService ?? Locator.Current.GetService<ITokenService>();
         }
 
-        public async Task<IEnumerable<Notification>> Get(string avatarUrl, Guid aggregateId, int fromVersion, CancellationToken cancellationToken = default) =>
+        public async Task<IEnumerable<Notification>> Get(string avatarUrl, Guid aggregateId, int fromVersion, string bearerToken, CancellationToken cancellationToken = default) =>
             await HttpEventStoreCoreClient.exponentialRetryPolicy.ExecuteAsync(
-                async () => await this.GetInternal(avatarUrl, aggregateId, fromVersion, cancellationToken).ConfigureAwait(false)
+                async () => await this.GetInternal(avatarUrl, aggregateId, fromVersion, bearerToken, cancellationToken).ConfigureAwait(false)
                 );
 
-        private async Task<IEnumerable<Notification>> GetInternal(string avatarUrl, Guid aggregateId, int fromVersion, CancellationToken token = default(CancellationToken))
+        private async Task<IEnumerable<Notification>> GetInternal(string avatarUrl, Guid aggregateId, int fromVersion, string bearerToken, CancellationToken token = default(CancellationToken))
         {
             return await requestProvider.GetAsync<IEnumerable<Notification>>(
                            $"{avatarUrl}{HttpEventStoreCoreClient.GetEventStorePathTemplate}/{aggregateId.ToString()}",
-                           token: token
+                           bearerToken,
+                           token
                            );
         }
     }

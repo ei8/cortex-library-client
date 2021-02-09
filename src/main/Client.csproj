@@ -5,13 +5,13 @@
     <AssemblyName>ei8.Cortex.Library.Client</AssemblyName>
     <RootNamespace>ei8.Cortex.Library.Client</RootNamespace>
     <PackageId>ei8.Cortex.Library.Client</PackageId>
-    <PackageVersion>0.2.0</PackageVersion>
+    <PackageVersion>0.2.1</PackageVersion>
     <Authors>Elmer Roderick Niem Bool</Authors>
     <Description>Cortex Library Client</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes>Removed Graph Common.</PackageReleaseNotes>
     <PackageTags>cortex library client</PackageTags>
-    <Version>0.2.0</Version>
+    <Version>0.2.1</Version>
     <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
   </PropertyGroup>
 
@@ -21,8 +21,11 @@
 
   <ItemGroup>
     <Compile Remove="Http\**" />
+    <Compile Remove="In\**" />
     <EmbeddedResource Remove="Http\**" />
+    <EmbeddedResource Remove="In\**" />
     <None Remove="Http\**" />
+    <None Remove="In\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,10 +41,6 @@
 
   <ItemGroup>
     <PackageReference Update="NETStandard.Library" Version="2.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="In\" />
   </ItemGroup>
 
 </Project>
