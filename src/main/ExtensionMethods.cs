@@ -80,7 +80,7 @@ namespace ei8.Cortex.Library.Client
             return queryStringBuilder.ToString();
         }
 
-        internal static void UnescapeTag(this NeuronResult value)
+        internal static void UnescapeTag(this Neuron value)
         {
             if (value.Tag != null)
                 value.Tag = Regex.Unescape(value.Tag);
