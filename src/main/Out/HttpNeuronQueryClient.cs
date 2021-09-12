@@ -169,12 +169,12 @@ namespace ei8.Cortex.Library.Client.Out
                 {
                     if (request.HasRelatives)
                     {
-                        // http://127.0.0.1:60001/avatars/[avatar]/cortex/neurons/[id]/relatives/[id2]
+                        // http://[avatar]/cortex/neurons/[id]/relatives/[id2]
                         if (request.Id2.Length > 0)
                         {
                             result = await this.GetNeuronByIdInternal(request.AvatarUrl, request.Id2, request.Id, query, bearerToken, token);
                         }
-                        // http://127.0.0.1:60001/avatars/[avatar]/cortex/neurons/[id]/relatives
+                        // http://[avatar]/cortex/neurons/[id]/relatives
                         else
                         {
                             result = await this.GetNeuronsInternal(request.AvatarUrl, request.Id, query, bearerToken, token);
@@ -182,11 +182,11 @@ namespace ei8.Cortex.Library.Client.Out
                     }
                     else
                     {
-                        // http://127.0.0.1:60001/avatars/[avatar]/cortex/neurons/[id]
+                        // http://[avatar]/cortex/neurons/[id]
                         result = await this.GetNeuronByIdInternal(request.AvatarUrl, request.Id, query, bearerToken, token);
                     }
                 }
-                // http://127.0.0.1:60001/avatars/[avatar]/cortex/neurons
+                // http://[avatar]/cortex/neurons
                 else
                     result = await this.GetNeuronsInternal(request.AvatarUrl, request.Id, query, bearerToken, token);
             }

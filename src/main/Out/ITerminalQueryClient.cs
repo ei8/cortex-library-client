@@ -37,5 +37,7 @@ namespace ei8.Cortex.Library.Client.Out
     public interface ITerminalQueryClient
     {
         Task<QueryResult<Terminal>> GetTerminalById(string avatarUrl, string id, NeuronQuery neuronQuery, string bearerToken, CancellationToken token = default(CancellationToken));
+
+        Task<QueryResult<Terminal>> GetTerminals(string avatarUrl, NeuronQuery neuronQuery, string bearerToken, CancellationToken token = default(CancellationToken));
     }
 }
