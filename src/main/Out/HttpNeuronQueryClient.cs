@@ -1,6 +1,6 @@
 ﻿/*
    This file is part of the d# project.
-   Copyright (c) 2016-2018 ei8
+   Copyright (c) 2016-2021 ei8
    Authors: ei8
     This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU Affero General Public License version 3
@@ -163,6 +163,8 @@ namespace ei8.Cortex.Library.Client.Out
                     query.TerminalActiveValues = HttpNeuronQueryClient.GetNullableEnumValue<ActiveValues>(request.QueryString, "tactive");
                     query.SortBy = HttpNeuronQueryClient.GetNullableEnumValue<SortByValue>(request.QueryString, "sortby");
                     query.SortOrder = HttpNeuronQueryClient.GetNullableEnumValue<SortOrderValue>(request.QueryString, "sortorder");
+                    query.ExternalReferenceUrl = HttpNeuronQueryClient.GetNameValue(request.QueryString, "erurl");
+                    query.ExternalReferenceUrlContains = HttpNeuronQueryClient.GetNameValue(request.QueryString, "erurlcontains");
                 }
 
                 if (request.Id.Length > 0)

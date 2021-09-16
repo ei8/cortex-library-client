@@ -24,6 +24,8 @@ namespace ei8.Cortex.Library.Client
             ExtensionMethods.AppendQuery(value.PostsynapticNot, nameof(NeuronQuery.PostsynapticNot), queryStringBuilder);
             ExtensionMethods.AppendQuery(value.RegionId, nameof(NeuronQuery.RegionId), queryStringBuilder, true);
             ExtensionMethods.AppendQuery(value.RegionIdNot, nameof(NeuronQuery.RegionIdNot), queryStringBuilder, true);
+            ExtensionMethods.AppendQuery(value.ExternalReferenceUrl, "erurl", queryStringBuilder);
+            ExtensionMethods.AppendQuery(value.ExternalReferenceUrlContains, "erurlcontains", queryStringBuilder);
 
             ExtensionMethods.AppendQuery(
                     value.RelativeValues,
