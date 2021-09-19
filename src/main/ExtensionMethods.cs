@@ -24,6 +24,8 @@ namespace ei8.Cortex.Library.Client
             ExtensionMethods.AppendQuery(value.PostsynapticNot, nameof(NeuronQuery.PostsynapticNot), queryStringBuilder);
             ExtensionMethods.AppendQuery(value.RegionId, nameof(NeuronQuery.RegionId), queryStringBuilder, true);
             ExtensionMethods.AppendQuery(value.RegionIdNot, nameof(NeuronQuery.RegionIdNot), queryStringBuilder, true);
+            ExtensionMethods.AppendQuery(value.ExternalReferenceUrl, "erurl", queryStringBuilder);
+            ExtensionMethods.AppendQuery(value.ExternalReferenceUrlContains, "erurlcontains", queryStringBuilder);
 
             ExtensionMethods.AppendQuery(
                     value.RelativeValues,
@@ -80,7 +82,7 @@ namespace ei8.Cortex.Library.Client
             return queryStringBuilder.ToString();
         }
 
-        internal static void UnescapeTag(this NeuronResult value)
+        internal static void UnescapeTag(this Neuron value)
         {
             if (value.Tag != null)
                 value.Tag = Regex.Unescape(value.Tag);

@@ -1,6 +1,6 @@
-﻿/*
+/*
    This file is part of the d# project.
-   Copyright (c) 2016-2018 ei8
+   Copyright (c) 2016-2021 ei8
    Authors: ei8
     This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU Affero General Public License version 3
@@ -29,22 +29,15 @@
 */
 
 using ei8.Cortex.Library.Common;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace ei8.Cortex.Library.Client.Out
 {
-    public interface INeuronQueryClient
+    public interface ITerminalQueryClient
     {
-        Task<QueryResult<Neuron>> GetNeurons(string avatarUrl, NeuronQuery neuronQuery, string bearerToken, CancellationToken token = default(CancellationToken));
+        Task<QueryResult<Terminal>> GetTerminalById(string avatarUrl, string id, NeuronQuery neuronQuery, string bearerToken, CancellationToken token = default(CancellationToken));
 
-        Task<QueryResult<Neuron>> GetNeurons(string avatarUrl, string centralId, NeuronQuery neuronQuery, string bearerToken, CancellationToken token = default(CancellationToken));
-
-        Task<QueryResult<Neuron>> GetNeuronById(string avatarUrl, string id, NeuronQuery neuronQuery, string bearerToken, CancellationToken token = default(CancellationToken));
-
-        Task<QueryResult<Neuron>> GetNeuronById(string avatarUrl, string id, string centralId, NeuronQuery neuronQuery, string bearerToken, CancellationToken token = default(CancellationToken));
-
-        Task<QueryResult<Neuron>> SendQuery(string queryUrl, string bearerToken, CancellationToken token = default(CancellationToken));
+        Task<QueryResult<Terminal>> GetTerminals(string avatarUrl, NeuronQuery neuronQuery, string bearerToken, CancellationToken token = default(CancellationToken));
     }
 }
