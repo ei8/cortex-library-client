@@ -76,7 +76,7 @@ namespace ei8.Cortex.Library.Client.Out
             return await HttpNeuronQueryClient.GetNeuronsUnescaped(
                 avatarUrl,
                 $"{HttpNeuronQueryClient.GetNeuronsPathTemplate}/{id}",
-                neuronQuery.ToQueryString(),
+                neuronQuery.ToString(),
                 token,
                 requestProvider,
                 bearerToken
@@ -92,7 +92,7 @@ namespace ei8.Cortex.Library.Client.Out
             return await HttpNeuronQueryClient.GetNeuronsUnescaped(
                 avatarUrl,
                 $"{HttpNeuronQueryClient.GetNeuronsPathTemplate}/{centralId}/relatives/{id}",
-                neuronQuery.ToQueryString(),
+                neuronQuery.ToString(),
                 token,
                 requestProvider,
                 bearerToken
@@ -115,7 +115,7 @@ namespace ei8.Cortex.Library.Client.Out
             return await HttpNeuronQueryClient.GetNeuronsUnescaped(
                 avatarUrl, 
                 path,
-                neuronQuery.ToQueryString(), 
+                neuronQuery.ToString(), 
                 token, 
                 requestProvider, 
                 bearerToken
@@ -143,29 +143,9 @@ namespace ei8.Cortex.Library.Client.Out
 
             if (QueryUrl.TryParse(queryUrl, out QueryUrl request))
             {   
-                NeuronQuery query = new NeuronQuery();
-                if (request.QueryString.Count > 0)
-                {                    
-                    query.Id = HttpNeuronQueryClient.GetNameValue(request.QueryString, "Id");
-                    query.IdNot = HttpNeuronQueryClient.GetNameValue(request.QueryString, "IdNot");
-                    query.TagContains = HttpNeuronQueryClient.GetNameValue(request.QueryString, "TagContains");
-                    query.TagContainsNot = HttpNeuronQueryClient.GetNameValue(request.QueryString, "TagContainsNot");
-                    query.Presynaptic = HttpNeuronQueryClient.GetNameValue(request.QueryString, "Presynaptic");
-                    query.PresynapticNot = HttpNeuronQueryClient.GetNameValue(request.QueryString, "PresynapticNot");
-                    query.Postsynaptic = HttpNeuronQueryClient.GetNameValue(request.QueryString, "Postsynaptic");
-                    query.PostsynapticNot = HttpNeuronQueryClient.GetNameValue(request.QueryString, "PostsynapticNot");
-                    query.RegionId = HttpNeuronQueryClient.GetNameValue(request.QueryString, "RegionId");
-                    query.RegionIdNot = HttpNeuronQueryClient.GetNameValue(request.QueryString, "RegionIdNot");
-                    query.RelativeValues = HttpNeuronQueryClient.GetNullableEnumValue<RelativeValues>(request.QueryString, "relative");
-                    query.PageSize = HttpNeuronQueryClient.GetNullableIntValue(request.QueryString, "pagesize");
-                    query.Page = HttpNeuronQueryClient.GetNullableIntValue(request.QueryString, "page");
-                    query.NeuronActiveValues = HttpNeuronQueryClient.GetNullableEnumValue<ActiveValues>(request.QueryString, "nactive");
-                    query.TerminalActiveValues = HttpNeuronQueryClient.GetNullableEnumValue<ActiveValues>(request.QueryString, "tactive");
-                    query.SortBy = HttpNeuronQueryClient.GetNullableEnumValue<SortByValue>(request.QueryString, "sortby");
-                    query.SortOrder = HttpNeuronQueryClient.GetNullableEnumValue<SortOrderValue>(request.QueryString, "sortorder");
-                    query.ExternalReferenceUrl = HttpNeuronQueryClient.GetNameValue(request.QueryString, "erurl");
-                    query.ExternalReferenceUrlContains = HttpNeuronQueryClient.GetNameValue(request.QueryString, "erurlcontains");
-                }
+                NeuronQuery query = NeuronQuery.TryParse(request.QueryString, out NeuronQuery nquery) ? 
+                    nquery : 
+                    new NeuronQuery(); 
 
                 if (request.Id.Length > 0)
                 {
@@ -195,36 +175,5 @@ namespace ei8.Cortex.Library.Client.Out
 
             return result;
         }
-
-        // TODO: Transfer to common
-        private static int? GetNullableIntValue(NameValueCollection nameValues, string name)
-        {
-            int? result = null;
-
-            if (nameValues[name] != null)
-                result = int.Parse(nameValues[name]);
-
-            return result;
-        }
-
-        // TODO: Transfer to common
-        private static T? GetNullableEnumValue<T>(NameValueCollection nameValues, string name) where T : struct, Enum
-        {
-            return nameValues[name] != null ? (T?)Enum.Parse(typeof(T), nameValues[name].ToString(), true) : null;
-        }
-
-        // TODO: Transfer to common, consolidate with ei8.Cortex.Library.Port.Adapter.Out.Api.NeuronModule helper methods
-        private static IEnumerable<string> GetNameValue(NameValueCollection nameValues, string name)
-        {
-            var parameterNameExclamation = name.Replace("Not", "!");
-            string[] stringArray = nameValues[name] != null ?
-                nameValues[name].ToString().Split(',') :
-                    nameValues[parameterNameExclamation] != null ?
-                    nameValues[parameterNameExclamation].ToString().Split(',') :
-                    null;
-
-            return stringArray != null ? stringArray.Select(s => s != "\0" ? s : null) : stringArray;
-        }
-
     }
 }

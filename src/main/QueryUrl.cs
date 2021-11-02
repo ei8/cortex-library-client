@@ -29,11 +29,6 @@ namespace ei8.Cortex.Library.Client
 								)?
 								$";
 
-        public QueryUrl()
-        {
-            this.QueryString = new NameValueCollection();
-        }
-
         public static bool TryParse(string input, out QueryUrl result)
         {
             var bResult = false;
@@ -54,33 +49,13 @@ namespace ei8.Cortex.Library.Client
                 if (queryString.Length > 0)
                 {
                     // replace with actual null character
+                    // TODO: transfer to common to centralize processing nullable regionid
                     queryString = queryString.Replace("\\0", "\0");
-                    result.QueryString = QueryUrl.ParseQueryString(queryString);
+                    result.QueryString = queryString;
                 }
             }
 
             return bResult;
-        }
-
-        private static NameValueCollection ParseQueryString(string s)
-        {
-            NameValueCollection nvc = new NameValueCollection();
-
-            foreach (string vp in Regex.Split(s, "&"))
-            {
-                string[] singlePair = Regex.Split(vp, "=");
-                if (singlePair.Length == 2)
-                {
-                    nvc.Add(singlePair[0], singlePair[1]);
-                }
-                else
-                {
-                    // only one key with no value specified in query string
-                    nvc.Add(singlePair[0], string.Empty);
-                }
-            }
-
-            return nvc;
         }
 
         public string AvatarUrl { get; private set; }
@@ -91,7 +66,7 @@ namespace ei8.Cortex.Library.Client
         
         public string Id2 { get; private set; }
 
-        public NameValueCollection QueryString { get; private set; }
+        public string QueryString { get; private set; }
 
         private static string GetMatchValue(Match m, string groupName)
         {

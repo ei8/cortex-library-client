@@ -68,7 +68,7 @@ namespace ei8.Cortex.Library.Client.Out
         private async Task<QueryResult<Terminal>> GetTerminalByIdInternal(string avatarUrl, string id, NeuronQuery neuronQuery, string bearerToken, CancellationToken token = default(CancellationToken))
         {
             return await requestProvider.GetAsync<QueryResult<Terminal>>(
-                           $"{avatarUrl}{HttpTerminalQueryClient.GetTerminalsPathTemplate}/{id}{neuronQuery.ToQueryString()}",
+                           $"{avatarUrl}{HttpTerminalQueryClient.GetTerminalsPathTemplate}/{id}{neuronQuery.ToString()}",
                            bearerToken,
                            token
                            );
@@ -82,7 +82,7 @@ namespace ei8.Cortex.Library.Client.Out
         private async Task<QueryResult<Terminal>> GetTerminalsInternal(string avatarUrl, NeuronQuery neuronQuery, string bearerToken, CancellationToken token = default(CancellationToken))
         {
             return await requestProvider.GetAsync<QueryResult<Terminal>>(
-                           $"{avatarUrl}{HttpTerminalQueryClient.GetTerminalsPathTemplate}{neuronQuery.ToQueryString()}",
+                           $"{avatarUrl}{HttpTerminalQueryClient.GetTerminalsPathTemplate}{neuronQuery.ToString()}",
                            bearerToken,
                            token
                            );
