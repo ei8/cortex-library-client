@@ -31,13 +31,16 @@
 using ei8.Cortex.Library.Common;
 using IdentityModel.Client;
 using Nancy.Helpers;
+using neurUL.Common.Domain.Model;
 using neurUL.Common.Http;
 using NLog;
 using Polly;
+using Polly.Retry;
 using Splat;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -48,14 +51,14 @@ namespace ei8.Cortex.Library.Client.Out
     public class HttpNeuronQueryClient : INeuronQueryClient
     {
         private readonly IRequestProvider requestProvider;
-        
-        private static Policy exponentialRetryPolicy = Policy
-            .Handle<Exception>()
-            .WaitAndRetryAsync(
-                3,
-                attempt => TimeSpan.FromMilliseconds(100 * Math.Pow(2, attempt)),
-                (ex, _) => HttpNeuronQueryClient.logger.Error(ex, "Error occurred while querying Cortex Graph. " + ex.InnerException?.Message)
-            );
+
+        private static AsyncRetryPolicy exponentialRetryPolicy = Policy
+           .Handle<Exception>()
+           .WaitAndRetryAsync(
+               3,
+               attempt => TimeSpan.FromMilliseconds(100 * Math.Pow(2, attempt)),
+               (ex, _) => HttpNeuronQueryClient.logger.Error(ex, "Error occurred while communicating with ei8 Cortex Library. " + ex.InnerException?.Message)
+           );
 
         private static readonly string GetNeuronsPathTemplate = "cortex/neurons";
         private static readonly string GetRelativesPathTemplate = GetNeuronsPathTemplate + "/{0}/relatives";
@@ -79,7 +82,8 @@ namespace ei8.Cortex.Library.Client.Out
                 neuronQuery.ToString(),
                 token,
                 requestProvider,
-                bearerToken
+                bearerToken,
+                string.Empty
                 );
         }
 
@@ -95,18 +99,31 @@ namespace ei8.Cortex.Library.Client.Out
                 neuronQuery.ToString(),
                 token,
                 requestProvider,
-                bearerToken
+                bearerToken,
+                string.Empty
                 );
         }
 
         public async Task<QueryResult<Neuron>> GetNeurons(string avatarUrl, NeuronQuery neuronQuery, string bearerToken, CancellationToken token = default(CancellationToken)) =>
             await this.GetNeurons(avatarUrl, null, neuronQuery, bearerToken, token);
 
-        public async Task<QueryResult<Neuron>> GetNeurons(string avatarUrl, string centralId, NeuronQuery neuronQuery, string bearerToken, CancellationToken token = default(CancellationToken)) =>
-            await HttpNeuronQueryClient.exponentialRetryPolicy.ExecuteAsync(
-                async () => await this.GetNeuronsInternal(avatarUrl, centralId, neuronQuery, bearerToken, token).ConfigureAwait(false));
+        public async Task<QueryResult<Neuron>> GetNeuronsInternal(string avatarUrl, NeuronQuery neuronQuery, string userId, CancellationToken token = default)
+        {
+            userId.ValidateStringParameter(nameof(userId));
 
-        private async Task<QueryResult<Neuron>> GetNeuronsInternal(string avatarUrl, string centralId, NeuronQuery neuronQuery, string bearerToken, CancellationToken token = default(CancellationToken))
+            return await HttpNeuronQueryClient.exponentialRetryPolicy.ExecuteAsync(
+                async () => await this.GetNeuronsCore(avatarUrl, null, neuronQuery, string.Empty, userId, token).ConfigureAwait(false));
+        }
+
+        public async Task<QueryResult<Neuron>> GetNeurons(string avatarUrl, string centralId, NeuronQuery neuronQuery, string bearerToken, CancellationToken token = default(CancellationToken))
+        {
+            bearerToken.ValidateStringParameter(nameof(bearerToken));
+
+            return await HttpNeuronQueryClient.exponentialRetryPolicy.ExecuteAsync(
+                async () => await this.GetNeuronsCore(avatarUrl, centralId, neuronQuery, bearerToken, string.Empty, token).ConfigureAwait(false));
+        }
+
+        private async Task<QueryResult<Neuron>> GetNeuronsCore(string avatarUrl, string centralId, NeuronQuery neuronQuery, string bearerToken, string userId, CancellationToken token = default(CancellationToken))
         {
             var path = string.IsNullOrEmpty(centralId) ? 
                 HttpNeuronQueryClient.GetNeuronsPathTemplate : 
@@ -118,12 +135,24 @@ namespace ei8.Cortex.Library.Client.Out
                 neuronQuery.ToString(), 
                 token, 
                 requestProvider, 
-                bearerToken
+                bearerToken,
+                userId
                 );
         }
 
-        private static async Task<QueryResult<Neuron>> GetNeuronsUnescaped(string avatarUrl, string path, string queryString, CancellationToken token, IRequestProvider requestProvider, string bearerToken)
+        private static async Task<QueryResult<Neuron>> GetNeuronsUnescaped(string avatarUrl, string path, string queryString, CancellationToken token, IRequestProvider requestProvider, string bearerToken, string userId)
         {
+            queryString +=
+                // user id is specified
+                !string.IsNullOrEmpty(userId) ?
+                    (
+                        // querystring is specified
+                        !string.IsNullOrEmpty(queryString) ?
+                            "&userid=" + userId :
+                            "?userid=" + userId
+                    ) :
+                    string.Empty;
+
             var result = await requestProvider.GetAsync<QueryResult<Neuron>>(
                            $"{avatarUrl}{path}{queryString}",
                            bearerToken,
@@ -159,7 +188,7 @@ namespace ei8.Cortex.Library.Client.Out
                         // http://[avatar]/cortex/neurons/[id]/relatives
                         else
                         {
-                            result = await this.GetNeuronsInternal(request.AvatarUrl, request.Id, query, bearerToken, token);
+                            result = await this.GetNeuronsCore(request.AvatarUrl, request.Id, query, bearerToken, string.Empty, token);
                         }
                     }
                     else
@@ -170,7 +199,7 @@ namespace ei8.Cortex.Library.Client.Out
                 }
                 // http://[avatar]/cortex/neurons
                 else
-                    result = await this.GetNeuronsInternal(request.AvatarUrl, request.Id, query, bearerToken, token);
+                    result = await this.GetNeuronsCore(request.AvatarUrl, request.Id, query, bearerToken, string.Empty, token);
             }
 
             return result;

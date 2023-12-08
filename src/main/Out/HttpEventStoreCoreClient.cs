@@ -2,6 +2,7 @@
 using neurUL.Common.Http;
 using NLog;
 using Polly;
+using Polly.Retry;
 using Splat;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace ei8.Cortex.Library.Client.Out
     {
         private readonly IRequestProvider requestProvider;
 
-        private static Policy exponentialRetryPolicy = Policy
+        private static AsyncRetryPolicy exponentialRetryPolicy = Policy
             .Handle<Exception>()
             .WaitAndRetryAsync(
                 3,
