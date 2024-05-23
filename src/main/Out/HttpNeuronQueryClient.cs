@@ -107,12 +107,15 @@ namespace ei8.Cortex.Library.Client.Out
         public async Task<QueryResult<Neuron>> GetNeurons(string avatarUrl, NeuronQuery neuronQuery, string bearerToken, CancellationToken token = default(CancellationToken)) =>
             await this.GetNeurons(avatarUrl, null, neuronQuery, bearerToken, token);
 
-        public async Task<QueryResult<Neuron>> GetNeuronsInternal(string avatarUrl, NeuronQuery neuronQuery, string userId, CancellationToken token = default)
+        public async Task<QueryResult<Neuron>> GetNeuronsInternal(string avatarUrl, NeuronQuery neuronQuery, string userId, CancellationToken token = default) =>
+            await this.GetNeuronsInternal(avatarUrl, null, neuronQuery, userId, token);
+
+        public async Task<QueryResult<Neuron>> GetNeuronsInternal(string avatarUrl, string centralId, NeuronQuery neuronQuery, string userId, CancellationToken token = default)
         {
             userId.ValidateStringParameter(nameof(userId));
 
             return await HttpNeuronQueryClient.exponentialRetryPolicy.ExecuteAsync(
-                async () => await this.GetNeuronsCore(avatarUrl, null, neuronQuery, string.Empty, userId, token).ConfigureAwait(false));
+                async () => await this.GetNeuronsCore(avatarUrl, centralId, neuronQuery, string.Empty, userId, token).ConfigureAwait(false));
         }
 
         public async Task<QueryResult<Neuron>> GetNeurons(string avatarUrl, string centralId, NeuronQuery neuronQuery, string bearerToken, CancellationToken token = default(CancellationToken))

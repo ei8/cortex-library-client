@@ -41,6 +41,8 @@ namespace ei8.Cortex.Library.Client.Out
 
         Task<QueryResult<Neuron>> GetNeuronsInternal(string avatarUrl, NeuronQuery neuronQuery, string userId, CancellationToken token = default(CancellationToken));
 
+        Task<QueryResult<Neuron>> GetNeuronsInternal(string avatarUrl, string centralId, NeuronQuery neuronQuery, string userId, CancellationToken token = default(CancellationToken));
+
         Task<QueryResult<Neuron>> GetNeurons(string avatarUrl, string centralId, NeuronQuery neuronQuery, string bearerToken, CancellationToken token = default(CancellationToken));
 
         Task<QueryResult<Neuron>> GetNeuronById(string avatarUrl, string id, NeuronQuery neuronQuery, string bearerToken, CancellationToken token = default(CancellationToken));
