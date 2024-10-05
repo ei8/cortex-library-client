@@ -29,20 +29,13 @@
 */
 
 using ei8.Cortex.Library.Common;
-using IdentityModel.Client;
-using Nancy.Helpers;
-using neurUL.Common.Domain.Model;
 using neurUL.Common.Http;
 using NLog;
 using Polly;
 using Polly.Retry;
 using Splat;
 using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Diagnostics;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
