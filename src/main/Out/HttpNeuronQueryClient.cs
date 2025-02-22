@@ -112,9 +112,7 @@ namespace ei8.Cortex.Library.Client.Out
         }
 
         public async Task<QueryResult<Neuron>> GetNeurons(string avatarUrl, string centralId, NeuronQuery neuronQuery, string bearerToken, CancellationToken token = default(CancellationToken))
-        {
-            bearerToken.ValidateStringParameter(nameof(bearerToken));
-
+        { 
             return await HttpNeuronQueryClient.exponentialRetryPolicy.ExecuteAsync(
                 async () => await this.GetNeuronsCore(avatarUrl, centralId, neuronQuery, bearerToken, string.Empty, token).ConfigureAwait(false));
         }
